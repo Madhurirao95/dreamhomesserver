@@ -1,7 +1,7 @@
 ﻿namespace SPOTAHOME.Controllers.DTOs.Account
 {
     /// <summary>
-    /// Represents the structure of the creation object of <see cref="Models.Account"/>
+    /// Represents the structure of the creation object of Account.
     /// </summary>
     public class AccountPostDTO
     {

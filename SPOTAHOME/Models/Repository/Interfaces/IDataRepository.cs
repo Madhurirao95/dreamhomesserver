@@ -2,10 +2,10 @@
 {
     public interface IDataRepository<TEntity>
     {
-        IEnumerable<TEntity> GetAll();
-        TEntity Get(long id);
+        Task<IEnumerable<TEntity>> GetAll();
+        Task<TEntity> Get(long id);
         void Add(TEntity entity);
-        void Update(TEntity entityToUpdate, TEntity entity);
+        void Update(TEntity entityToUpdate);
         void Delete(TEntity entity);
     }
 }

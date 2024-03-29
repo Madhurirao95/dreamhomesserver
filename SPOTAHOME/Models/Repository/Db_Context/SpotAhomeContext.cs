@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using System.Reflection.Metadata;
 
 namespace SPOTAHOME.Models.Repository.Db_Context;
 
-public partial class SpotAhomeContext : DbContext
+public partial class SpotAhomeContext : IdentityDbContext<IdentityUser>
 {
     public SpotAhomeContext()
     {
@@ -15,26 +17,40 @@ public partial class SpotAhomeContext : DbContext
     {
     }
 
-    public virtual DbSet<Account> Accounts { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=DESKTOP-T30UDT3\\SQLEXPRESS;Database=SpotAHome;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Account>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Account__3214EC07A567129B");
+        base.OnModelCreating(modelBuilder);
 
-            entity.ToTable("Account");
+        modelBuilder.Entity<SellerInformation>()
+            .HasMany(d => d.Documents)
+            .WithOne()
+            .HasForeignKey(s => s.SellerId)
+            .IsRequired();
 
-            entity.Property(e => e.Email).HasMaxLength(50);
-            entity.Property(e => e.Password).HasMaxLength(50);
-        });
+        modelBuilder.Entity<Document>()
+            .HasOne<SellerInformation>()
+            .WithMany(d => d.Documents)
+            .HasForeignKey(s => s.SellerId)
+            .IsRequired();
 
-        OnModelCreatingPartial(modelBuilder);
+        modelBuilder.Entity<SellerInformation>()
+            .HasOne(e => e.User)
+            .WithMany()
+            .HasForeignKey(e => e.UserId)
+            .IsRequired();
+
+        modelBuilder.Entity<IdentityUser>()
+            .HasMany<SellerInformation>()
+            .WithOne(e => e.User)
+            .HasForeignKey(e => e.UserId)
+            .IsRequired();
     }
 
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    public DbSet<SellerInformation> SellerInformation { get; set; }
+
+    public DbSet<Document> Document { get; set; }
 }
