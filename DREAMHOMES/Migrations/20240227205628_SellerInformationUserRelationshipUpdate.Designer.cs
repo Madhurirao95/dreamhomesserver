@@ -11,7 +11,7 @@ using DREAMHOMES.Models.Repository.Db_Context;
 
 namespace DREAMHOMES.Migrations
 {
-    [DbContext(typeof(SpotAhomeContext))]
+    [DbContext(typeof(DreamhomesContext))]
     [Migration("20240227205628_SellerInformationUserRelationshipUpdate")]
     partial class SellerInformationUserRelationshipUpdate
     {

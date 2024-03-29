@@ -6,9 +6,9 @@ namespace DREAMHOMES.Models.Repository
 {
     public class SellRepository : ISellRepository
     {
-        private readonly SpotAhomeContext _context;
+        private readonly DreamhomesContext _context;
 
-        public SellRepository(SpotAhomeContext context)
+        public SellRepository(DreamhomesContext context)
         {
             _context = context;
         }

@@ -10,7 +10,7 @@ using DREAMHOMES.Models.Repository.Db_Context;
 
 namespace DREAMHOMES.Migrations
 {
-    [DbContext(typeof(SpotAhomeContext))]
+    [DbContext(typeof(DreamhomesContext))]
     partial class SpotAhomeContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

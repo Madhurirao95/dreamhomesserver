@@ -1,18 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using System.Reflection.Metadata;
 
 namespace DREAMHOMES.Models.Repository.Db_Context;
 
-public partial class SpotAhomeContext : IdentityDbContext<IdentityUser>
+public partial class DreamhomesContext : IdentityDbContext<IdentityUser>
 {
-    public SpotAhomeContext()
+    public DreamhomesContext()
     {
     }
 
-    public SpotAhomeContext(DbContextOptions<SpotAhomeContext> options)
+    public DreamhomesContext(DbContextOptions<DreamhomesContext> options)
         : base(options)
     {
     }

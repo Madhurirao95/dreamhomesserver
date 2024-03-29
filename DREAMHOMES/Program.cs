@@ -36,7 +36,7 @@ var mapperConfig = new MapperConfiguration(mc =>
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
-builder.Services.AddDbContext<SpotAhomeContext>(
+builder.Services.AddDbContext<DreamhomesContext>(
         options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
 
 
@@ -50,7 +50,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<SpotAhomeContext>();
+                .AddEntityFrameworkStores<DreamhomesContext>();
 
 var jwtSection = builder.Configuration.GetSection("JwtBearerTokenSettings");
 builder.Services.Configure<JwtBearerTokenSettings>(jwtSection);

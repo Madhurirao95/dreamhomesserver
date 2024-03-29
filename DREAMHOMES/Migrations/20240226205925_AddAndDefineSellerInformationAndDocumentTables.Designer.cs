@@ -11,7 +11,7 @@ using DREAMHOMES.Models.Repository.Db_Context;
 
 namespace DREAMHOMES.Migrations
 {
-    [DbContext(typeof(SpotAhomeContext))]
+    [DbContext(typeof(DreamhomesContext))]
     [Migration("20240226205925_AddAndDefineSellerInformationAndDocumentTables")]
     partial class AddAndDefineSellerInformationAndDocumentTables
     {
