@@ -7,5 +7,7 @@ namespace DREAMHOMES.Models.Repository.Interfaces
         Task<IEnumerable<SellerInformation>> GetAllByAddress(string streetAddress, string city, string zipCode, string country, States state);
 
         Task<IEnumerable<SellerInformation>> GetAllListingBySeller(string userId);
+
+        Task<(IEnumerable<SellerInformation>, int)> GetAllListingByCoordinates(double coordinatex, double coordinatey, int page, int pageSize);
     }
 }

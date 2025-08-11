@@ -12,6 +12,6 @@ namespace DREAMHOMES.Controllers.DTOs.SellerInformation
         /// <summary>
         /// Gets or sets the list of Photos/Videos associated to the Listing.
         /// </summary>
-        public IList<DocumentLiteDTO> Documents { get; set; } = null!;
+        public IList<DocumentLiteDTO> DocumentList { get; set; } = null!;
     }
 }

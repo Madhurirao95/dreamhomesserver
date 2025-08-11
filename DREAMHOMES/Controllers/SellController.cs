@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic.FileIO;
 using DREAMHOMES.Controllers.DTOs.SellerInformation;
 using DREAMHOMES.Controllers.DTOs.SellerInformation.Document;
 using DREAMHOMES.Models;
@@ -46,7 +44,7 @@ namespace DREAMHOMES.Controllers
             var sellerInformation = _mapper.Map<SellerInformation>(sellerInformationPostPutDTO);
 
             // get and assign user identity.
-            string? email = User.FindFirstValue(ClaimTypes.Email);
+            string email = User.FindFirstValue(ClaimTypes.Email);
             if (!string.IsNullOrWhiteSpace(email))
             {
                 var x = await _userManager.FindByNameAsync(email);
@@ -119,11 +117,11 @@ namespace DREAMHOMES.Controllers
         [HttpGet("getAllListing")]
         public async Task<IActionResult> GetAllListingBySeller()
         {
-            var results = new List<SellerInformationLiteDTO>();
+            var results = new List<SellerInformationLiteGetDTO>();
             var allListings = new List<SellerInformation>();
 
             // get the current user identity.
-            string? email = User.FindFirstValue(ClaimTypes.Email);
+            string email = User.FindFirstValue(ClaimTypes.Email);
             if (!string.IsNullOrWhiteSpace(email))
             {
                 var x = await _userManager.FindByNameAsync(email);
@@ -142,7 +140,7 @@ namespace DREAMHOMES.Controllers
                 byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
 
                
-                var dto = _mapper.Map<SellerInformationLiteDTO>(listing);
+                var dto = _mapper.Map<SellerInformationLiteGetDTO>(listing);
                 var documentDto = new DocumentLiteDTO();
                 documentDto.DocumentBase64 = Convert.ToBase64String(fileBytes);
                 documentDto.DocumentType = fileType;
@@ -181,7 +179,7 @@ namespace DREAMHOMES.Controllers
                 documentDtoList.Add(documentDto);
             }
 
-            resultDto.Documents = documentDtoList;
+            resultDto.DocumentList = documentDtoList;
 
             return Ok(resultDto);
         }

@@ -67,6 +67,11 @@ namespace DREAMHOMES.Services
             return await _sellRepository.Get(id);
         }
 
+        public async Task<(IEnumerable<SellerInformation>, int)> GetAllListingByCoordinates(double coordinatex, double coordinatey, int page, int pageSize)
+        {
+            return await _sellRepository.GetAllListingByCoordinates(coordinatex, coordinatey, page, pageSize);
+        }
+
         private async Task<IEnumerable<ValidationResult>> CheckDuplicateListing(SellerInformation sellerInformation)
         {
             var results = new List<ValidationResult>();

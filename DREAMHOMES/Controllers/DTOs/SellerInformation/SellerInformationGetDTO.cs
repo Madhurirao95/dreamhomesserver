@@ -1,16 +1,19 @@
-﻿using DREAMHOMES.Controllers.DTOs.SellerInformation.Document;
-
-namespace DREAMHOMES.Controllers.DTOs.SellerInformation
+﻿namespace DREAMHOMES.Controllers.DTOs.SellerInformation
 {
     /// <summary>
     /// Resprests a structure that sends minimal data regarding <see cref="SellerInformation"/>
     /// </summary>
-    public class SellerInformationLiteDTO
+    public class SellerInformationGetDTO
     {
         /// <summary>
         /// Gets or sets the Id.
         /// </summary>
         public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Unit number.
+        /// </summary>
+        public string Unit { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the Street Address.
@@ -36,10 +39,5 @@ namespace DREAMHOMES.Controllers.DTOs.SellerInformation
         /// Gets or sets the Country.
         /// </summary>
         public string Country { get; set; } = null!;
-
-        /// <summary>
-        /// Gets or sets a random document associated to the Seller.
-        /// </summary>
-        public DocumentLiteDTO RandomDocument { get; set; } = null!;
     }
 }

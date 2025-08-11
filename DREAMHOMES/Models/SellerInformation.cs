@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.Text.Json.Serialization;
+using NetTopologySuite.Geometries;
+using System.ComponentModel.DataAnnotations;
 
 namespace DREAMHOMES.Models
 {
@@ -73,79 +74,180 @@ namespace DREAMHOMES.Models
         {
             None,
             House,
-            Apartment,
-            Plot
+            TownHouse,
+            Condominium,
+            Land
         }
 
         /// <summary>
-        /// Gets of sets the ID.
+        /// Represents the ENUM for type of Building.
+        /// </summary>
+        public enum TypeOfBuilding
+        {
+            None,
+            Resale,
+            NewConstruction
+        }
+
+        /// <summary>
+        /// Represents the ENUM for status of Listing.
+        /// </summary>
+        public enum StatusOfListing
+        {
+            None,
+            Active,
+            ComingSoon,
+            UnderContractOrPending,
+            Sold
+        }
+
+        /// <summary>
+        /// Gets or sets the ID.
         /// </summary>
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets of sets the Street Address.
+        /// Gets or sets the Street Address.
         /// </summary>
+        [MaxLength(1000)]
         public string StreetAddress { get; set; } = null!;
 
         /// <summary>
-        /// Gets of sets the City.
+        /// Gets or sets the City.
         /// </summary>
+        [MaxLength(100)]
         public string City { get; set; } = null!;
 
         /// <summary>
-        /// Gets of sets the Unit.
+        /// Gets or sets the Unit.
         /// </summary>
-        [JsonIgnore]
+        [MaxLength(50)]
         public string? Unit { get; set; }
 
         /// <summary>
-        /// Gets of sets the Zip Code.
+        /// Gets or sets the Zip Code.
         /// </summary>
+        [MaxLength(50)]
         public string ZipCode { get; set; } = null!;
 
         /// <summary>
-        /// Gets of sets the Country Code.
+        /// Gets or sets the Country Code.
         /// </summary>
+        [MaxLength(10)]
         public string CountryCode { get; set; } = "US";
 
         /// <summary>
-        /// Gets of sets the State.
-        /// </summary>
+        /// Gets or sets the State.
+        /// </summary>  
         public States State { get; set; } = States.None;
 
         /// <summary>
-        /// Gets of sets the Contact Number.
+        /// Gets or sets the Contact Number.
         /// </summary>
-        [JsonIgnore]
+        [MaxLength(10)]
         public string? ContactNumber { get; set; }
 
         /// <summary>
-        /// Gets of sets the Remarks.
+        /// Gets or sets the Listing Price.
         /// </summary>
-        [JsonIgnore]
-        public string? Remarks { get; set; }
+        public double ListingPrice { get; set; }
 
         /// <summary>
-        /// Gets of sets the Price.
+        /// Gets or sets the Sold Price.
         /// </summary>
-        public double Price { get; set; }
+        public double SoldPrice { get; set; }
 
         /// <summary>
-        /// Gets of sets the Area.
+        /// Gets or sets the Area.
         /// </summary>
         public double Area { get; set; }
 
         /// <summary>
-        /// Gets of sets the Type of Listing.
+        /// Gets or sets the Latitude and Longitude of the Address.
+        /// </summary>
+        public Point Location { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the Type of Listing.
         /// </summary>
         public TypeOfListing Type { get; set; } = TypeOfListing.None;
 
         /// <summary>
-        /// Gets of sets the list of <see cref="Document"/> .
+        /// Gets or sets the Status of Listing.
         /// </summary>
-        public IList<Document> Documents { get; set; } = null!;
+        public StatusOfListing Status { get; set; } = StatusOfListing.Active;
+
+        /// <summary>
+        /// Gets or sets the Type of Building.
+        /// </summary>
+        public TypeOfBuilding BuildingType { get; set; } = TypeOfBuilding.Resale;
+
+        /// <summary>
+        /// Gets or sets the Year Built.
+        /// </summary>
+        public int YearBuilt { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Lot Area.
+        /// </summary>
+        public double LotArea { get; set; }
+
+        /// <summary>
+        /// Gets or sets the HOA Amount.
+        /// </summary>
+        public double HOA { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Number of BedRooms.
+        /// </summary>
+        public double BedRooms { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Number of BathRooms.
+        /// </summary>
+        public double BathRooms { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Amount Per Sq. Ft.
+        /// </summary>
+        public double AmountPerSqFt { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether Fire Place is present or not.
+        /// </summary>
+        public bool HasFirePlace { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Number of Fire Places.
+        /// </summary>
+        public int NumberOfFirePlace { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether Garage Space is present or not.
+        /// </summary>
+        public bool HasGarage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Number of Garage Space.
+        /// </summary>
+        public int NumberOfGarageSpace { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether Pool is present or not.
+        /// </summary>
+        public bool HasPool { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of key value pairs as property.
+        /// </summary>
+        public string? Properties { get; set; }
 
         //Entity Relationships
+
+        /// <summary>
+        /// Gets or sets the list of <see cref="Document"/> .
+        /// </summary>
+        public IList<Document> Documents { get; set; } = null!;
         /// <summary>
         /// Gets or sets the string User ID.
         /// </summary>

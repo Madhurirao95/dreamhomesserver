@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DREAMHOMES.Models.Repository.Db_Context;
 using DREAMHOMES.Models.Repository.Interfaces;
+using NetTopologySuite.Geometries;
 
 namespace DREAMHOMES.Models.Repository
 {
@@ -15,6 +16,12 @@ namespace DREAMHOMES.Models.Repository
 
         public void Add(SellerInformation entity)
         {
+            // Extract to common method.
+            var geometryFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            var currentLocation = geometryFactory.CreatePoint(new Coordinate(entity.Location.X, entity.Location.Y));
+
+            entity.Location = currentLocation;
+
             _context.Add(entity);
             _context.SaveChanges();
         }
@@ -39,6 +46,10 @@ namespace DREAMHOMES.Models.Repository
 
         public void Update(SellerInformation entityToUpdate)
         {
+            var geometryFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            var currentLocation = geometryFactory.CreatePoint(new Coordinate(entityToUpdate.Location.X, entityToUpdate.Location.Y));
+
+            entityToUpdate.Location = currentLocation;
             _context.SellerInformation.Update(entityToUpdate);
             _context.SaveChanges();
         }
@@ -60,6 +71,27 @@ namespace DREAMHOMES.Models.Repository
                    .Where(x => x.UserId == userId)
                    .Include(x => x.Documents)
                    .ToListAsync();
+        }
+
+        public async Task<(IEnumerable<SellerInformation>, int)> GetAllListingByCoordinates(double coordinatex, double coordinatey, int page, int pageSize)
+        {
+            var geometryFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            var centerPoint = geometryFactory.CreatePoint(new Coordinate(coordinatex, coordinatey));
+
+            // Perform the spatial query
+            var query = _context.SellerInformation.Where(l => l.Location.IsWithinDistance(centerPoint, 100000)).Include(x => x.Documents);
+            var results =  await query
+            .Select(item => new
+             {
+                 item,
+                 TotalCount = query.Count()
+             })
+            .Skip(page * pageSize)
+            .Take(pageSize)
+            .Where(l => l.item.Location.IsWithinDistance(centerPoint, 100000))
+            .ToListAsync();
+
+            return (results.Select(x => x.item), results.FirstOrDefault()?.TotalCount ?? query.Count());
         }
     }
 }

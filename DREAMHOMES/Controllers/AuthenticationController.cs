@@ -60,7 +60,7 @@ namespace DREAMHOMES.Controllers
         public async Task<IActionResult> SignIn([FromBody] AccountPostDTO accountPostDTO)
         {
 
-            IdentityUser? identityUser;
+            IdentityUser identityUser;
 
             if (accountPostDTO == null
                 || (identityUser = await ValidateUser(accountPostDTO)) == null)
@@ -75,7 +75,7 @@ namespace DREAMHOMES.Controllers
             return Ok(new { Token = token, Message = "Success" });
         }
 
-        private async Task<IdentityUser?> ValidateUser(AccountPostDTO accountPostDTO)
+        private async Task<IdentityUser> ValidateUser(AccountPostDTO accountPostDTO)
         {
             var identityUser = await _userManager.FindByEmailAsync(accountPostDTO.Email);
             if (identityUser != null)

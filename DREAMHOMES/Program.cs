@@ -16,6 +16,11 @@ using DREAMHOMES.Services;
 using DREAMHOMES.Services.Interfaces;
 using DREAMHOMES.Services.MappingProfile;
 using System.Text;
+using FluentValidation.AspNetCore;
+using System.Reflection;
+using FluentValidation;
+using DREAMHOMES.Models;
+using DREAMHOMES.Models.Rules;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +42,7 @@ IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
 builder.Services.AddDbContext<DreamhomesContext>(
-        options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
+        options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection", x => x.UseNetTopologySuite()));
 
 
 builder.Services.AddScoped<ISellService, SellService>();
@@ -48,6 +53,9 @@ builder.Services.AddScoped<ISellRepository, SellRepository>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddScoped<IValidator<SellerInformation>, SellerInformationValidator>();
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DreamhomesContext>();

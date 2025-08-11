@@ -4,6 +4,7 @@ using DREAMHOMES.Models.Repository.Db_Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
@@ -12,9 +13,11 @@ using NetTopologySuite.Geometries;
 namespace DREAMHOMES.Migrations
 {
     [DbContext(typeof(DreamhomesContext))]
-    partial class SpotAhomeContextModelSnapshot : ModelSnapshot
+    [Migration("20240430183948_AddedFewMoreProperties")]
+    partial class AddedFewMoreProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

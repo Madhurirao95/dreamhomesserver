@@ -12,5 +12,7 @@ namespace DREAMHOMES.Services.Interfaces
         Task<IEnumerable<SellerInformation>> GetAllListingBySeller(string userId);
 
         Task<SellerInformation> GetSellerInformationById(int id);
+
+        Task<(IEnumerable<SellerInformation>, int)> GetAllListingByCoordinates(double coordinatex, double coordinatey, int page, int pageSize);
     }
 }

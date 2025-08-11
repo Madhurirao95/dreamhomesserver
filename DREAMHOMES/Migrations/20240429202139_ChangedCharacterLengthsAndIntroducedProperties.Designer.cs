@@ -4,6 +4,7 @@ using DREAMHOMES.Models.Repository.Db_Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
@@ -12,9 +13,11 @@ using NetTopologySuite.Geometries;
 namespace DREAMHOMES.Migrations
 {
     [DbContext(typeof(DreamhomesContext))]
-    partial class SpotAhomeContextModelSnapshot : ModelSnapshot
+    [Migration("20240429202139_ChangedCharacterLengthsAndIntroducedProperties")]
+    partial class ChangedCharacterLengthsAndIntroducedProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,20 +76,8 @@ namespace DREAMHOMES.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("AmountPerSqFt")
-                        .HasColumnType("float");
-
                     b.Property<double>("Area")
                         .HasColumnType("float");
-
-                    b.Property<double>("BathRooms")
-                        .HasColumnType("float");
-
-                    b.Property<double>("BedRooms")
-                        .HasColumnType("float");
-
-                    b.Property<int>("BuildingType")
-                        .HasColumnType("int");
 
                     b.Property<string>("City")
                         .HasMaxLength(100)
@@ -100,44 +91,17 @@ namespace DREAMHOMES.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<double>("HOA")
-                        .HasColumnType("float");
-
-                    b.Property<bool>("HasFirePlace")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasGarage")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("HasPool")
-                        .HasColumnType("bit");
-
-                    b.Property<double>("ListingPrice")
-                        .HasColumnType("float");
-
                     b.Property<Point>("Location")
                         .IsRequired()
                         .HasColumnType("geography");
 
-                    b.Property<double>("LotArea")
+                    b.Property<double>("Price")
                         .HasColumnType("float");
-
-                    b.Property<int>("NumberOfFirePlace")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberOfGarageSpace")
-                        .HasColumnType("int");
 
                     b.Property<string>("Properties")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("SoldPrice")
-                        .HasColumnType("float");
-
                     b.Property<int>("State")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("StreetAddress")
@@ -154,9 +118,6 @@ namespace DREAMHOMES.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("YearBuilt")
-                        .HasColumnType("int");
 
                     b.Property<string>("ZipCode")
                         .HasMaxLength(50)
