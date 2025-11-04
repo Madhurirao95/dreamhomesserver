@@ -13,9 +13,9 @@ namespace DREAMHOMES.Controllers.DTOs.SellerInformation
         public string Type { get; set; }
 
         /// <summary>
-        /// Gets or sets the Price.
+        /// Gets or sets the Listing Price.
         /// </summary>
-        public double Price { get; set; }
+        public double ListingPrice { get; set; }
 
         /// <summary>
         /// Gets or sets the Area.
@@ -31,6 +31,16 @@ namespace DREAMHOMES.Controllers.DTOs.SellerInformation
         /// Gets or sets the Y Co-ordinate.
         /// </summary>
         public double CoordinateY { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Description.
+        /// </summary>
+        public string Description { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Properties.
+        /// </summary>
+        public string Properties { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the list of document associated to the Seller.

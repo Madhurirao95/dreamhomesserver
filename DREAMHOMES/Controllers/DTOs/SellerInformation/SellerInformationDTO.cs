@@ -128,5 +128,10 @@ namespace DREAMHOMES.Controllers.DTOs.SellerInformation
         /// Gets or sets the list of key value pairs as property.
         /// </summary>
         public string Properties { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the Description of the Listing.
+        /// </summary>
+        public string Description { get; set; } = string.Empty;
     }
 }

@@ -94,7 +94,7 @@ namespace DREAMHOMES.Models
         /// </summary>
         public enum StatusOfListing
         {
-            None,
+            OffMarket,
             Active,
             ComingSoon,
             UnderContractOrPending,
@@ -241,6 +241,11 @@ namespace DREAMHOMES.Models
         /// Gets or sets the list of key value pairs as property.
         /// </summary>
         public string? Properties { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description of the Listing.
+        /// </summary>
+        public string? Description { get; set; }
 
         //Entity Relationships
 
