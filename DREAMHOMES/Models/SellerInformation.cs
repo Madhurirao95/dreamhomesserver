@@ -261,6 +261,6 @@ namespace DREAMHOMES.Models
         /// <summary>
         /// Gets or sets the Seller itself.
         /// </summary>
-        public IdentityUser User { get; set; } = null!;
+        public ApplicationUser User { get; set; } = null!;
     }
 }
