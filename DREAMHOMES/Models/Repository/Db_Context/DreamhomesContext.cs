@@ -44,7 +44,7 @@ public partial class DreamhomesContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(e => e.UserId)
             .IsRequired();
 
-        modelBuilder.Entity<IdentityUser>()
+        modelBuilder.Entity<ApplicationUser>()
             .HasMany<SellerInformation>()
             .WithOne(e => e.User)
             .HasForeignKey(e => e.UserId)
