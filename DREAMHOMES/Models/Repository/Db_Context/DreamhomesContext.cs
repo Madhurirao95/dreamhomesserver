@@ -53,12 +53,14 @@ public partial class DreamhomesContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Conversation>()
             .HasOne(c => c.User)
             .WithMany()
-            .HasForeignKey(c => c.UserId);
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Conversation>()
             .HasOne(c => c.Agent)
             .WithMany()
-            .HasForeignKey(c => c.AgentId);
+            .HasForeignKey(c => c.AgentId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<Conversation>()
             .HasMany(e => e.Messages)
