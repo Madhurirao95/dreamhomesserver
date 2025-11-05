@@ -10,6 +10,7 @@ using System.Security.Claims;
 
 using System.Text;
 using DREAMHOMES.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DREAMHOMES.Controllers
 {
@@ -79,8 +80,6 @@ namespace DREAMHOMES.Controllers
 
             return Ok(new { Message = "Account Creation Successful for the Agent" });
         }
-
-
 
         [HttpPost("signIn")]
         public async Task<IActionResult> SignIn([FromBody] AccountPostDTO accountPostDTO)

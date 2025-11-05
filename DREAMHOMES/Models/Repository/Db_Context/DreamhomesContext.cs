@@ -49,9 +49,65 @@ public partial class DreamhomesContext : IdentityDbContext<ApplicationUser>
             .WithOne(e => e.User)
             .HasForeignKey(e => e.UserId)
             .IsRequired();
+
+        modelBuilder.Entity<Conversation>()
+            .HasOne(c => c.User)
+            .WithMany()
+            .HasForeignKey(c => c.UserId);
+
+        modelBuilder.Entity<Conversation>()
+            .HasOne(c => c.Agent)
+            .WithMany()
+            .HasForeignKey(c => c.AgentId);
+
+        modelBuilder.Entity<Conversation>()
+            .HasMany(e => e.Messages)
+            .WithOne()
+            .HasForeignKey(s => s.ConversationId)
+            .IsRequired();
+
+        modelBuilder.Entity<Conversation>()
+            .HasKey(e => e.Id);
+
+        modelBuilder.Entity<Conversation>(entity =>
+        {
+            entity.Property(c => c.AgentId)
+                  .IsRequired();
+            entity.Property(c => c.UserId)
+                  .IsRequired();
+        });
+
+        modelBuilder.Entity<ChatMessage>()
+            .HasKey(e => e.Id);
+
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.Property(c => c.Content)
+                  .IsRequired();
+            entity.Property(c => c.ConversationId)
+                  .IsRequired();
+            entity.Property(c => c.UserId)
+                  .IsRequired();
+        });
+
+
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(c => c.User)
+            .WithMany()
+            .HasForeignKey(c => c.UserId);
+
+        modelBuilder.Entity<ChatMessage>()
+            .HasOne(c => c.Conversation)
+            .WithMany(d => d.Messages)
+            .HasForeignKey(c => c.ConversationId)
+            .IsRequired();
     }
 
     public DbSet<SellerInformation> SellerInformation { get; set; }
 
     public DbSet<Document> Document { get; set; }
+
+    public DbSet<Conversation> Conversations { get; set; }
+
+    public DbSet<ChatMessage> ChatMessages { get; set; }
 }
