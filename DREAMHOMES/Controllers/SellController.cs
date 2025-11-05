@@ -17,9 +17,9 @@ namespace DREAMHOMES.Controllers
         private readonly ILogger<SellController> _logger;
         private readonly IMapper _mapper;
         private readonly ISellService _service;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public SellController(ILogger<SellController> logger, IMapper mapper, ISellService sellService, UserManager<IdentityUser> userManager) { 
+        public SellController(ILogger<SellController> logger, IMapper mapper, ISellService sellService, UserManager<ApplicationUser> userManager) { 
             _logger = logger;
             _mapper = mapper;
             _service = sellService;
@@ -111,7 +111,7 @@ namespace DREAMHOMES.Controllers
         }
 
         /// <summary>
-        /// Gets all the Listing posted by the <see cref="IdentityUser"/>
+        /// Gets all the Listing posted by the <see cref="ApplicationUser"/>
         /// </summary>
         /// <returns>Result containing the List of Postings.</returns>
         [Authorize]

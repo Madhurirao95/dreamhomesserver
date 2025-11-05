@@ -17,7 +17,6 @@ using DREAMHOMES.Services.Interfaces;
 using DREAMHOMES.Services.MappingProfile;
 using System.Text;
 using FluentValidation.AspNetCore;
-using System.Reflection;
 using FluentValidation;
 using DREAMHOMES.Models;
 using DREAMHOMES.Models.Rules;
@@ -57,7 +56,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddScoped<IValidator<SellerInformation>, SellerInformationValidator>();
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DreamhomesContext>();
 
 var jwtSection = builder.Configuration.GetSection("JwtBearerTokenSettings");
@@ -88,6 +87,20 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string[] roles = { "User", "Agent" };
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

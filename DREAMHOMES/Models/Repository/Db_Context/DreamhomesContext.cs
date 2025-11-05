@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DREAMHOMES.Models.Repository.Db_Context;
 
-public partial class DreamhomesContext : IdentityDbContext<IdentityUser>
+public partial class DreamhomesContext : IdentityDbContext<ApplicationUser>
 {
     public DreamhomesContext()
     {
