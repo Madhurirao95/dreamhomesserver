@@ -1,9 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using static DREAMHOMES.Models.SellerInformation;
 
 namespace DREAMHOMES.Models
 {
     public class Conversation
     {
+        /// <summary>
+        /// Represents the ENUM for Status of Conversation.
+        /// </summary>
+        public enum ConversationStatus
+        {
+            Abandoned,
+            Active,
+            Ended
+        }
+
         /// <summary>
         /// Gets or sets the ID.
         /// </summary>
@@ -41,6 +52,11 @@ namespace DREAMHOMES.Models
         /// Gets or sets the End Time.
         /// </summary>
         public DateTime? EndTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Status.
+        /// </summary>
+        public ConversationStatus Status { get; set; } = ConversationStatus.Active;
 
         // Navigation properties
         public IList<ChatMessage> Messages { get; set; } = null!;

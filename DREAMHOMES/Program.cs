@@ -1,4 +1,18 @@
 using AutoMapper;
+using DREAMHOMES.Configuration;
+using DREAMHOMES.Controllers.Mappers;
+using DREAMHOMES.Extensions;
+using DREAMHOMES.Hubs;
+using DREAMHOMES.Models;
+using DREAMHOMES.Models.Repository;
+using DREAMHOMES.Models.Repository.Db_Context;
+using DREAMHOMES.Models.Repository.Interfaces;
+using DREAMHOMES.Models.Rules;
+using DREAMHOMES.Services;
+using DREAMHOMES.Services.Interfaces;
+using DREAMHOMES.Services.MappingProfile;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -6,20 +20,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using DREAMHOMES.Configuration;
-using DREAMHOMES.Controllers.Mappers;
-using DREAMHOMES.Extensions;
-using DREAMHOMES.Models.Repository;
-using DREAMHOMES.Models.Repository.Db_Context;
-using DREAMHOMES.Models.Repository.Interfaces;
-using DREAMHOMES.Services;
-using DREAMHOMES.Services.Interfaces;
-using DREAMHOMES.Services.MappingProfile;
 using System.Text;
-using FluentValidation.AspNetCore;
-using FluentValidation;
-using DREAMHOMES.Models;
-using DREAMHOMES.Models.Rules;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,8 +47,11 @@ builder.Services.AddDbContext<DreamhomesContext>(
 
 builder.Services.AddScoped<ISellService, SellService>();
 builder.Services.AddScoped<IValidationService, ValidationService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 builder.Services.AddScoped<ISellRepository, SellRepository>();
+builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
+builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -79,7 +83,27 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtBearerTokenSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(key),
     };
+
+    // IMPORTANT: Configure JWT for SignalR
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+
+            // If the request is for SignalR hub
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chathub"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        }
+    };
 });
+
+builder.Services.AddSignalR();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -125,6 +149,7 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<ChatHub>("/chathub");
 app.MapControllers();
 
 app.Run();

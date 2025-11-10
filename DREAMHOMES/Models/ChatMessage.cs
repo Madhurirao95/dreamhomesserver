@@ -18,6 +18,8 @@ namespace DREAMHOMES.Models
         [Required]
         public string Content { get; set; }
 
+        public bool IsFromAgent { get; set; }
+
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
         // Navigation property

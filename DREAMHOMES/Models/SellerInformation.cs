@@ -70,7 +70,7 @@ namespace DREAMHOMES.Models
         /// <summary>
         /// Represents the ENUM for type of Listing.
         /// </summary>
-        public enum TypeOfListing
+        public enum ListingType
         {
             None,
             House,
@@ -92,7 +92,7 @@ namespace DREAMHOMES.Models
         /// <summary>
         /// Represents the ENUM for status of Listing.
         /// </summary>
-        public enum StatusOfListing
+        public enum ListingStatus
         {
             OffMarket,
             Active,
@@ -170,12 +170,12 @@ namespace DREAMHOMES.Models
         /// <summary>
         /// Gets or sets the Type of Listing.
         /// </summary>
-        public TypeOfListing Type { get; set; } = TypeOfListing.None;
+        public ListingType Type { get; set; } = ListingType.None;
 
         /// <summary>
         /// Gets or sets the Status of Listing.
         /// </summary>
-        public StatusOfListing Status { get; set; } = StatusOfListing.Active;
+        public ListingStatus Status { get; set; } = ListingStatus.Active;
 
         /// <summary>
         /// Gets or sets the Type of Building.

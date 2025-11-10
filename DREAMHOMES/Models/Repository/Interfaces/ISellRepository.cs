@@ -2,7 +2,7 @@
 
 namespace DREAMHOMES.Models.Repository.Interfaces
 {
-    public interface ISellRepository : IDataRepository<SellerInformation>
+    public interface ISellRepository : IDataRepository<SellerInformation, long>
     {
         Task<IEnumerable<SellerInformation>> GetAllByAddress(string streetAddress, string city, string zipCode, string country, States state);
 
