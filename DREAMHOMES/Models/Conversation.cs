@@ -10,7 +10,6 @@ namespace DREAMHOMES.Models
         /// </summary>
         public enum ConversationStatus
         {
-            Abandoned,
             Active,
             Ended
         }
