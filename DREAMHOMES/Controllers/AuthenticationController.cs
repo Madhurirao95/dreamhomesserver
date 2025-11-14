@@ -100,6 +100,20 @@ namespace DREAMHOMES.Controllers
             return Ok(new { Token = token, Message = "Success" });
         }
 
+        [HttpGet("isAgent")]
+        public async Task<IActionResult> IsAgent(string email)
+        {
+            if (String.IsNullOrEmpty(email))
+                return new BadRequestObjectResult(new { Message = "Email is invalid" });
+
+            var applicationUser = await _userManager.FindByEmailAsync(email);
+            if (applicationUser == null)
+                return Ok(false);
+
+            return Ok(applicationUser.IsAgent);
+        }
+
+
         private async Task<ApplicationUser> ValidateUser(AccountPostDTO accountPostDTO)
         {
             var applicationUser = await _userManager.FindByEmailAsync(accountPostDTO.Email);
@@ -120,6 +134,7 @@ namespace DREAMHOMES.Controllers
             var userRoles = await _userManager.GetRolesAsync(applicationUser);
             var claims = new List<Claim>
             {
+            new(ClaimTypes.NameIdentifier, applicationUser.Id),
             new(ClaimTypes.Email, applicationUser.Email)
             };
 

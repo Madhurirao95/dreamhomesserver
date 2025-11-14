@@ -14,11 +14,9 @@ using DREAMHOMES.Services.MappingProfile;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -48,10 +46,22 @@ builder.Services.AddDbContext<DreamhomesContext>(
 builder.Services.AddScoped<ISellService, SellService>();
 builder.Services.AddScoped<IValidationService, ValidationService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<ISellRepository, SellRepository>();
 builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        policy => policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()); // Required for SignalR
+});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -145,7 +155,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
-app.UseCors("CorsPolicy");
+app.UseCors("AllowAngularApp");
 app.UseAuthentication();
 app.UseAuthorization();
 
