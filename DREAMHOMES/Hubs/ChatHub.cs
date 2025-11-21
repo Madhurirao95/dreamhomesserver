@@ -1,4 +1,6 @@
-﻿using DREAMHOMES.Models;
+﻿using AutoMapper;
+using DREAMHOMES.Controllers.DTOs.ChatHub;
+using DREAMHOMES.Models;
 using DREAMHOMES.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -11,13 +13,15 @@ namespace DREAMHOMES.Hubs
     {
         private readonly IChatService _chatService;
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
         private static ConcurrentDictionary<string, UserConnection> _connections = new();
-        private static ConcurrentDictionary<string, string> _userQueue = new();
+        private static ConcurrentDictionary<string, WaitingUserInfo> _userQueue = new();
 
-        public ChatHub(IChatService chatService, IUserService userService)
+        public ChatHub(IChatService chatService, IUserService userService, IMapper mapper)
         {
             _chatService = chatService;
             _userService = userService;
+            _mapper = mapper;
         }
 
         public override async Task OnConnectedAsync()
@@ -57,7 +61,7 @@ namespace DREAMHOMES.Hubs
                     userId,
                     email
                 });
-                await NotifyAgentsOfQueue();
+                await SyncQueueToAllAgents();
             }
             else
             {
@@ -121,10 +125,10 @@ namespace DREAMHOMES.Hubs
             var recipientId = isAgent ? conversation.UserId : conversation.AgentId;
 
             // Send to the other party
-            await Clients.User(recipientId).SendAsync("ReceiveMessage", savedMessage);
+            await Clients.User(recipientId).SendAsync("ReceiveMessage", this._mapper.Map<ChatMessageDTO>(savedMessage));
 
             // Confirm to sender
-            await Clients.Caller.SendAsync("MessageSent", savedMessage);
+            await Clients.Caller.SendAsync("MessageSent", this._mapper.Map<ChatMessageDTO>(savedMessage));
         }
 
         [Authorize(Roles = "Agent")] // Only agents can accept chats
@@ -154,32 +158,63 @@ namespace DREAMHOMES.Hubs
 
             // Remove user from queue
             _userQueue.TryRemove(waitingUserId, out _);
-
+           
             // Get agent name
             var agentName = await _userService.GetUserName(agentId);
 
             // Notify user they're connected to an agent
-            await Clients.User(waitingUserId).SendAsync("AgentAssigned", new
+            await Clients.User(waitingUserId).SendAsync("AgentAssigned", new UserConversationDTO
             {
-                conversationId = conversation.Id,
-                agentId,
-                agentName = agentName ?? agentEmail,
-                agentEmail
+                ConversationId = conversation.Id,
+                UserId = agentId,
+                UserName = agentName ?? agentEmail,
+                UserEmail = agentEmail
             });
 
             // Notify agent
             var userName = await _userService.GetUserName(waitingUserId);
             var userEmail = await _userService.GetUserEmail(waitingUserId);
 
-            await Clients.Caller.SendAsync("ChatAccepted", new
+            await Clients.Caller.SendAsync("ChatAccepted", new UserConversationDTO
             {
-                conversationId = conversation.Id,
-                userId = waitingUserId,
-                userName,
-                userEmail
+                ConversationId = conversation.Id,
+                UserId = waitingUserId,
+                UserName = userName,
+                UserEmail = userEmail
             });
 
-            await NotifyAgentsOfQueue();
+            await SyncQueueToAllAgents();
+        }
+
+        public async Task SendTypingIndicator(string conversationId, bool isTyping)
+        {
+            var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var isAgent = Context.User?.IsInRole("Agent") ?? false;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return;
+            }
+
+            var conversation = await _chatService.GetConversation(conversationId);
+            if (conversation == null)
+            {
+                return;
+            }
+
+            // Verify user is part of conversation
+            if (conversation.UserId != userId && conversation.AgentId != userId)
+            {
+                return;
+            }
+
+            var recipientId = isAgent ? conversation.UserId : conversation.AgentId;
+
+            await Clients.User(recipientId).SendAsync("UserTyping", new
+            {
+                userId,
+                isTyping
+            });
         }
 
         public async Task EndConversation(string conversationId)
@@ -250,10 +285,24 @@ namespace DREAMHOMES.Hubs
             foreach (var conv in activeConversations)
             {
                 await Clients.User(conv.UserId).SendAsync("AgentDisconnected");
-                _userQueue[conv.UserId] = conv.UserId;
+                var userName = await _userService.GetUserName(conv.UserId);
+                var userEmail = await _userService.GetUserEmail(conv.UserId);
+                var userConnection = _connections.Values.FirstOrDefault(c => c.UserId == conv.UserId);
+
+                if (userConnection != null)
+                {
+                    _userQueue[conv.UserId] = new WaitingUserInfo
+                    {
+                        UserId = conv.UserId,
+                        UserName = userName,
+                        Email = userEmail,
+                        ConnectionId = userConnection.ConnectionId,
+                        WaitingSince = DateTime.UtcNow
+                    };
+                }
             }
 
-            await NotifyAgentsOfQueue();
+            await SyncQueueToAllAgents();
         }
 
         private async Task AssignAgentToUser(string userId, string email, string connectionId)
@@ -265,31 +314,55 @@ namespace DREAMHOMES.Hubs
                 var userName = await _userService.GetUserName(userId);
 
                 // Notify agent of new user
-                await Clients.User(availableAgent).SendAsync("NewUserWaiting", new
+                await Clients.User(availableAgent).SendAsync("NewUserWaiting", new WaitingUserDTO 
                 {
-                    userId,
-                    userName,
-                    userEmail = email,
-                    waitingSince = DateTime.UtcNow
+                    UserId = userId,
+                    UserName = userName,
+                    UserEmail = email,
+                    WaitingSince = DateTime.UtcNow
                 });
             }
             else
             {
-                // Add to queue
-                _userQueue[userId] = connectionId;
+                var userName = await _userService.GetUserName(userId);
 
-                // Notify user they're in queue
+                _userQueue[userId] = new WaitingUserInfo
+                {
+                    UserId = userId,
+                    UserName = userName,
+                    Email = email,
+                    ConnectionId = connectionId,
+                    WaitingSince = DateTime.UtcNow
+                };
+
+                // Calculate queue position
                 var queuePosition = _userQueue.Keys.ToList().IndexOf(userId) + 1;
                 await Clients.Caller.SendAsync("AddedToQueue", queuePosition);
-            }
 
-            await NotifyAgentsOfQueue();
+                // Sync queue to all agents
+                await SyncQueueToAllAgents();
+            }
         }
 
-        private async Task NotifyAgentsOfQueue()
+        private async Task SyncQueueToAllAgents()
         {
-            var queueCount = _userQueue.Count;
-            await Clients.Group("Agents").SendAsync("QueueUpdated", queueCount);
+            var waitingUsers = _userQueue.Values
+                .Select(w => new
+                {
+                    userId = w.UserId,
+                    userName = w.UserName,
+                    userEmail = w.Email,
+                    waitingSince = w.WaitingSince
+                })
+                .OrderBy(w => w.waitingSince) // Oldest first
+                .ToList();
+
+            await Clients.Group("Agents").SendAsync("QueueSync", new
+            {
+                users = waitingUsers,
+                count = waitingUsers.Count,
+                timestamp = DateTime.UtcNow
+            });
         }
     }
 
@@ -307,5 +380,14 @@ namespace DREAMHOMES.Hubs
     {
         public string AgentId { get; set; }
         public int ActiveChats { get; set; }
+    }
+
+    public class WaitingUserInfo
+    {
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public string ConnectionId { get; set; }
+        public DateTime WaitingSince { get; set; }
     }
 }

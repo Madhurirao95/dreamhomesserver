@@ -63,7 +63,7 @@ namespace DREAMHOMES.Controllers
                 return new BadRequestObjectResult(new { Message = "Account Creation Failed" });
             }
 
-            var applicationUser = new ApplicationUser() { UserName = accountPostDTO.Email, Email = accountPostDTO.Email, IsAgent = true, MaxConcurrentChats = 5 };
+            var applicationUser = new ApplicationUser() { UserName = accountPostDTO.Email, Email = accountPostDTO.Email, IsAgent = true, MaxConcurrentChats = 50 };
             var creationResult = await _userManager.CreateAsync(applicationUser, accountPostDTO.Password);
             if (!creationResult.Succeeded)
             {

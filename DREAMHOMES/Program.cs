@@ -1,6 +1,7 @@
 using AutoMapper;
 using DREAMHOMES.Configuration;
 using DREAMHOMES.Controllers.Mappers;
+using DREAMHOMES.Controllers.Mapping_Profiles;
 using DREAMHOMES.Extensions;
 using DREAMHOMES.Hubs;
 using DREAMHOMES.Models;
@@ -32,6 +33,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 var mapperConfig = new MapperConfiguration(mc =>
 {
+    mc.AddProfile(new ChatHubProfile());
     mc.AddProfile(new SellProfile());
     mc.AddProfile(new SellServiceMappingProfile());
 });
@@ -117,7 +119,7 @@ builder.Services.AddSignalR();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.IgnoreNullValues = true;
+    options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
 });
 
 var app = builder.Build();
