@@ -102,6 +102,15 @@ namespace DREAMHOMES.Models
         }
 
         /// <summary>
+        /// Represents the ENUM for Area Units.
+        /// </summary>
+        public enum AreaUnits
+        {
+            SqFt,
+            Acres
+        }
+
+        /// <summary>
         /// Gets or sets the ID.
         /// </summary>
         public int Id { get; set; }
@@ -191,6 +200,11 @@ namespace DREAMHOMES.Models
         /// Gets or sets the Lot Area.
         /// </summary>
         public double LotArea { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Lot Area Unit.
+        /// </summary>
+        public AreaUnits LotAreaUnit { get; set; } = AreaUnits.SqFt;
 
         /// <summary>
         /// Gets or sets the HOA Amount.

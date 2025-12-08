@@ -7,37 +7,37 @@ namespace DREAMHOMES.Controllers.DTOs.SellerInformation
         /// <summary>
         /// Gets or sets the Street Address.
         /// </summary>
-        public string StreetAddress { get; set; } = null!;
+        public string StreetAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the City.
         /// </summary>
-        public string City { get; set; } = null!;
+        public string City { get; set; }
 
         /// <summary>
         /// Gets or sets the State.
         /// </summary>
-        public string State { get; set; } = null!;
+        public string State { get; set; }
 
         /// <summary>
         /// Gets or sets the Zip Code.
         /// </summary>
-        public string ZipCode { get; set; } = null!;
+        public string ZipCode { get; set; }
 
         /// <summary>
         /// Gets or sets a Contact Number.
         /// </summary>
-        public string ContactNumber { get; set; } = string.Empty;
+        public string ContactNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the Unit number.
         /// </summary>
-        public string Unit { get; set; } = string.Empty;
+        public string Unit { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="SellerInformation.TypeOfListing"/>
         /// </summary>
-        public string Type { get; set; } = null!;
+        public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets the Price.
@@ -62,12 +62,12 @@ namespace DREAMHOMES.Controllers.DTOs.SellerInformation
         /// <summary>
         /// Gets or sets the Status of Listing.
         /// </summary>
-        public string Status { get; set; } = null!;
+        public string Status { get; set; }
 
         /// <summary>
         /// Gets or sets the Type of Building.
         /// </summary>
-        public string BuildingType { get; set; } = null!;
+        public string BuildingType { get; set; }
 
         /// <summary>
         /// Gets or sets the Year Built.
@@ -78,6 +78,11 @@ namespace DREAMHOMES.Controllers.DTOs.SellerInformation
         /// Gets or sets the Lot Area.
         /// </summary>
         public double LotArea { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Lot Area Unit.
+        /// </summary>
+        public string LotAreaUnit { get; set; }
 
         /// <summary>
         /// Gets or sets the HOA Amount.
@@ -127,11 +132,11 @@ namespace DREAMHOMES.Controllers.DTOs.SellerInformation
         /// <summary>
         /// Gets or sets the list of key value pairs as property.
         /// </summary>
-        public string Properties { get; set; } = string.Empty;
+        public string Properties { get; set; }
 
         /// <summary>
         /// Gets or sets the Description of the Listing.
         /// </summary>
-        public string Description { get; set; } = string.Empty;
+        public string Description { get; set; }
     }
 }
