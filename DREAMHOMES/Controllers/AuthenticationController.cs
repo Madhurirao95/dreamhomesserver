@@ -90,7 +90,7 @@ namespace DREAMHOMES.Controllers
             if (accountPostDTO == null
                 || (applicationUser = await ValidateUser(accountPostDTO)) == null)
             {
-                return new BadRequestObjectResult(new { Message = "Sign In failed" });
+                return new BadRequestObjectResult(new { Message = "Wrong Password. Please try again!" });
             }
 
             var token = GenerateToken(applicationUser);
