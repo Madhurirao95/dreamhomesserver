@@ -11,12 +11,12 @@ namespace DREAMHOMESTEST.ServicesTest
     [TestFixture]
     public class AuthenticationServiceTest
     {
-        private IAuthenticationService _authService;
+        //private IAuthenticationService _authService;
 
-        [SetUp]
-        public void SetUp()
-        {
-            _authService = new AuthenticationService();
-        }
+        //[SetUp]
+        //public void SetUp()
+        //{
+        //    _authService = new AuthenticationService();
+        //}
     }
 }

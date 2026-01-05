@@ -11,6 +11,7 @@ using System.Security.Claims;
 using System.Text;
 using DREAMHOMES.Models;
 using Microsoft.AspNetCore.Authorization;
+using DREAMHOMES.Services.Interfaces;
 
 namespace DREAMHOMES.Controllers
 {
@@ -18,15 +19,15 @@ namespace DREAMHOMES.Controllers
     [Route("[controller]")]
     public class AuthenticationController : ControllerBase
     {
-        private readonly JwtBearerTokenSettings _jwtBearerTokenSettings = null!;
         private readonly ILogger<AuthenticationController> _logger;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthenticationService _authenticationService;
+        private readonly IUserService _userService;
 
-        public AuthenticationController(IOptions<JwtBearerTokenSettings> jwtTokenOptions, ILogger<AuthenticationController> logger, UserManager<ApplicationUser> userManager)
+        public AuthenticationController(ILogger<AuthenticationController> logger, IAuthenticationService authenticationService, IUserService userService)
         {
-            _jwtBearerTokenSettings = jwtTokenOptions.Value;
             _logger = logger;
-            _userManager = userManager;
+            _userService = userService;
+            _authenticationService = authenticationService;
         }
 
         [HttpPost("createAccount/user")]
@@ -37,8 +38,8 @@ namespace DREAMHOMES.Controllers
                 return new BadRequestObjectResult(new { Message = "Account Creation Failed" });
             }
 
-            var applicationUser = new ApplicationUser() { UserName = accountPostDTO.Email, Email = accountPostDTO.Email };
-            var creationResult = await _userManager.CreateAsync(applicationUser, accountPostDTO.Password);
+            var creationResult = await this._authenticationService.CreateAccount(accountPostDTO.Email, accountPostDTO.Password);
+
             if (!creationResult.Succeeded)
             {
                 var errorsDictionary = new Dictionary<string, string>();
@@ -49,7 +50,7 @@ namespace DREAMHOMES.Controllers
 
                 return new BadRequestObjectResult(new { Message = "Account Creation Failed", Errors = errorsDictionary });
             }
-            await _userManager.AddToRoleAsync(applicationUser, "User");
+            
             _logger.LogInformation("Account created successfully for the User!");
 
             return Ok(new { Message = "Account Creation Successful for User" });
@@ -63,8 +64,7 @@ namespace DREAMHOMES.Controllers
                 return new BadRequestObjectResult(new { Message = "Account Creation Failed" });
             }
 
-            var applicationUser = new ApplicationUser() { UserName = accountPostDTO.Email, Email = accountPostDTO.Email, IsAgent = true, MaxConcurrentChats = 50 };
-            var creationResult = await _userManager.CreateAsync(applicationUser, accountPostDTO.Password);
+            var creationResult = await this._authenticationService.CreateAccount(accountPostDTO.Email, accountPostDTO.Password, true);
             if (!creationResult.Succeeded)
             {
                 var errorsDictionary = new Dictionary<string, string>();
@@ -75,7 +75,6 @@ namespace DREAMHOMES.Controllers
 
                 return new BadRequestObjectResult(new { Message = "Account Creation Failed", Errors = errorsDictionary });
             }
-            await _userManager.AddToRoleAsync(applicationUser, "Agent");
             _logger.LogInformation("Account created successfully for the Agent!");
 
             return Ok(new { Message = "Account Creation Successful for the Agent" });
@@ -85,15 +84,17 @@ namespace DREAMHOMES.Controllers
         public async Task<IActionResult> SignIn([FromBody] AccountPostDTO accountPostDTO)
         {
 
-            ApplicationUser applicationUser;
-
             if (accountPostDTO == null
-                || (applicationUser = await ValidateUser(accountPostDTO)) == null)
+                || (await this._userService.GetUserByEmail(accountPostDTO.Email) == null))
             {
-                return new BadRequestObjectResult(new { Message = "Wrong Password. Please try again!" });
+                return new BadRequestObjectResult(new { Message = "Your email does not exist. Please Create a new Account!" });
             }
 
-            var token = GenerateToken(applicationUser);
+            if(!await this._authenticationService.IsPasswordValid(accountPostDTO.Email, accountPostDTO.Password))
+            {
+                return new BadRequestObjectResult(new { Message = "The password is incorrect. Please try again!" });
+            }
+            var token = await this._authenticationService.SignIn(accountPostDTO.Email, accountPostDTO.Password);
 
             _logger.LogInformation("Sign In successful!");
 
@@ -106,55 +107,29 @@ namespace DREAMHOMES.Controllers
             if (String.IsNullOrEmpty(email))
                 return new BadRequestObjectResult(new { Message = "Email is invalid" });
 
-            var applicationUser = await _userManager.FindByEmailAsync(email);
+            var applicationUser = await this._userService.GetUserByEmail(email);
             if (applicationUser == null)
                 return Ok(false);
 
             return Ok(applicationUser.IsAgent);
         }
 
-
-        private async Task<ApplicationUser> ValidateUser(AccountPostDTO accountPostDTO)
+        [HttpGet("isExistingUser")]
+        public async Task<IActionResult> IsExistingUser(string email)
         {
-            var applicationUser = await _userManager.FindByEmailAsync(accountPostDTO.Email);
-            if (applicationUser != null)
-            {
-                var result = _userManager.PasswordHasher.VerifyHashedPassword(applicationUser, applicationUser.PasswordHash, accountPostDTO.Password);
-                return result == PasswordVerificationResult.Failed ? null : applicationUser;
-            }
-
-            return null;
+            var user = await this._userService.GetUserByEmail(email);
+            return Ok(user != null);
         }
 
-        private async Task<object> GenerateToken(ApplicationUser applicationUser)
+
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] AccountPostDTO dto)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_jwtBearerTokenSettings.SecretKey);
+            var result = await this._userService.ResetPassword(dto.Email, dto.Password);
 
-            var userRoles = await _userManager.GetRolesAsync(applicationUser);
-            var claims = new List<Claim>
-            {
-            new(ClaimTypes.NameIdentifier, applicationUser.Id),
-            new(ClaimTypes.Email, applicationUser.Email)
-            };
-
-            foreach (var role in userRoles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-
-                Expires = DateTime.UtcNow.AddMinutes(_jwtBearerTokenSettings.ExpiryTimeInMinutes),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Audience = _jwtBearerTokenSettings.Audience,
-                Issuer = _jwtBearerTokenSettings.Issuer
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            if (result.Succeeded) return Ok();
+            return BadRequest(result.Errors);
         }
+
     }
 }

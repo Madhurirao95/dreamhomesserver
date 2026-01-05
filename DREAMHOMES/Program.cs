@@ -49,6 +49,7 @@ builder.Services.AddScoped<ISellService, SellService>();
 builder.Services.AddScoped<IValidationService, ValidationService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 builder.Services.AddScoped<ISellRepository, SellRepository>();
 builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
@@ -73,7 +74,8 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddScoped<IValidator<SellerInformation>, SellerInformationValidator>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<DreamhomesContext>();
+                .AddEntityFrameworkStores<DreamhomesContext>()
+                .AddDefaultTokenProviders();
 
 var jwtSection = builder.Configuration.GetSection("JwtBearerTokenSettings");
 builder.Services.Configure<JwtBearerTokenSettings>(jwtSection);

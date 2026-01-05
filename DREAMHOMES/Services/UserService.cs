@@ -52,5 +52,43 @@ namespace DREAMHOMES.Services
                 return true;
             return false;
         }
+
+        public async Task<ApplicationUser> GetUserByEmail(string email)
+        {
+            return await this._userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<IdentityResult> CreateUserWithRole(string email, string password, bool isAgent)
+        {
+            var applicationUser = new ApplicationUser() { UserName = email, Email = email };
+            if (isAgent)
+            {
+                applicationUser.IsAgent = true;
+                applicationUser.MaxConcurrentChats = 50; // Default value for agents
+            }
+            var creationResult = await _userManager.CreateAsync(applicationUser, password);
+
+            if (creationResult.Succeeded)
+            {
+                if (isAgent)
+                    await _userManager.AddToRoleAsync(applicationUser, "Agent");
+                else
+                    await _userManager.AddToRoleAsync(applicationUser, "User");
+            }
+
+            return creationResult;
+        }
+
+        public async Task<IdentityResult> ResetPassword(string email, string password)
+        {
+            var user = await this.GetUserByEmail(email);
+            if (user == null) return 
+                    IdentityResult.Failed(new IdentityError { Description = "User not found." });
+
+            // Directly reset password (not recommended for production)
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            return await _userManager.ResetPasswordAsync(user, token, password);
+
+        }
     }
 }
