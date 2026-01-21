@@ -29,17 +29,10 @@ builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 
 builder.Services.AddControllers();
-builder.Services.AddAutoMapper(typeof(Program));
-
-var mapperConfig = new MapperConfiguration(mc =>
+builder.Services.AddAutoMapper(cfg =>
 {
-    mc.AddProfile(new ChatHubProfile());
-    mc.AddProfile(new SellProfile());
-    mc.AddProfile(new SellServiceMappingProfile());
+    cfg.AddMaps(typeof(Program).Assembly);
 });
-
-IMapper mapper = mapperConfig.CreateMapper();
-builder.Services.AddSingleton(mapper);
 
 builder.Services.AddDbContext<DreamhomesContext>(
         options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection", x => x.UseNetTopologySuite()));
@@ -70,8 +63,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddScoped<IValidator<SellerInformation>, SellerInformationValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<SellerInformationValidator>();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DreamhomesContext>()
