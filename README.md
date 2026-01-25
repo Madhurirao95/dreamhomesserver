@@ -27,7 +27,7 @@ DREAMHOMES Server is a RESTful API backend that powers the DREAMHOMES property m
 - 👤 **Identity Management** - ASP.NET Core Identity for user management
 - 🗺️ **Geospatial Support** - NetTopologySuite for location-based queries
 - 📊 **Entity Framework Core** - Code-first database approach with SQL Server
-- ✅ **Validation** - FluentValidation for request validation
+- ✅ **Input Validation** - Custom validator pattern for request validation
 - 🔄 **AutoMapper** - Object-to-object mapping
 - 📝 **API Documentation** - Swagger/OpenAPI documentation
 - 🧪 **Comprehensive Testing** - Unit tests with NUnit/Moq and BDD integration tests with SpecFlow
@@ -50,7 +50,6 @@ DREAMHOMES Server is a RESTful API backend that powers the DREAMHOMES property m
 
 ### Libraries & Tools
 - **AutoMapper**: 16.0.0 - Object mapping
-- **FluentValidation**: 11.3.0 - Input validation
 - **Swashbuckle (Swagger)**: 10.1.0 - API documentation
 
 ### Testing Frameworks
@@ -282,11 +281,11 @@ dreamhomesserver/
 │   ├── Validators/         # FluentValidation validators
 │   ├── Profiles/           # AutoMapper profiles
 │   └── Program.cs          # Application entry point
-├── UNITTEST/               # Unit tests (NUnit + Moq)
+├── DREAMHOMESTEST/         # Unit tests (NUnit + Moq)
 │   ├── Services/           # Service layer tests
 │   ├── Repositories/       # Repository tests
 │   └── Validators/         # Validation tests
-├── INTEGRATIONTEST/        # BDD tests (SpecFlow + NUnit)
+├── Integration Tests/      # BDD tests (SpecFlow + NUnit)
 │   ├── Features/           # Gherkin feature files
 │   ├── StepDefinitions/    # Step definition classes
 │   ├── Drivers/            # Test infrastructure
@@ -311,7 +310,7 @@ The application follows a clean architecture pattern:
 - **Dependency Injection**: Built-in ASP.NET Core DI
 - **DTO Pattern**: Data Transfer Objects for API contracts
 - **Mapper Pattern**: AutoMapper for object transformations
-- **Validator Pattern**: FluentValidation for input validation
+- **Validator Pattern**: Custom validation for input validation
 
 ### Authentication Flow
 
@@ -364,12 +363,6 @@ The application follows a clean architecture pattern:
 - **C# Language Version**: 12.0
 - **Test Framework**: NUnit 4.4.0 / NUnit 3.13.3
 - **BDD Framework**: SpecFlow 3.9.74
-
-## 📞 Support
-
-For issues and questions:
-- Open an issue on GitHub
-- Check existing issues for solutions
 
 ## 👨‍💻 Author
 
