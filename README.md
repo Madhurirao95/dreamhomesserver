@@ -1,6 +1,6 @@
 # DREAMHOMES Server
 
-Backend API for the DREAMHOMES application, built with ASP.NET Core 6.0 and Entity Framework Core.
+Backend API for the DREAMHOMES application, built with ASP.NET Core 10.0 and Entity Framework Core.
 
 ## 📋 Table of Contents
 
@@ -27,32 +27,37 @@ DREAMHOMES Server is a RESTful API backend that powers the DREAMHOMES property m
 - 👤 **Identity Management** - ASP.NET Core Identity for user management
 - 🗺️ **Geospatial Support** - NetTopologySuite for location-based queries
 - 📊 **Entity Framework Core** - Code-first database approach with SQL Server
-- ✅ **Validation** - FluentValidation for request validation
+- ✅ **Input Validation** - Custom validator pattern for request validation
 - 🔄 **AutoMapper** - Object-to-object mapping
 - 📝 **API Documentation** - Swagger/OpenAPI documentation
-- 🧪 **Testing** - Unit and Integration tests with SpecFlow (Gherkin)
+- 🧪 **Comprehensive Testing** - Unit tests with NUnit/Moq and BDD integration tests with SpecFlow
 
 ## 🛠️ Tech Stack
 
 ### Core Framework
-- **.NET**: 6.0
-- **C#**: 10.0
-- **ASP.NET Core**: 6.0
+- **.NET**: 10.0
+- **C#**: 12.0
+- **ASP.NET Core**: 10.0
 
 ### Database & ORM
 - **SQL Server**: Database engine
-- **Entity Framework Core**: 7.0.10
-- **NetTopologySuite**: 7.0.10 - Geospatial data support
+- **Entity Framework Core**: 10.0.2
+- **NetTopologySuite**: 10.0.2 - Geospatial data support
 
 ### Authentication & Security
-- **ASP.NET Core Identity**: 6.0.26 - User management
-- **JWT Bearer Authentication**: 6.0.26 - Token-based auth
+- **ASP.NET Core Identity**: 10.0.2 - User management
+- **JWT Bearer Authentication**: 10.0.2 - Token-based auth
 
 ### Libraries & Tools
-- **AutoMapper**: 12.0.1 - Object mapping
-- **FluentValidation**: 11.3.0 - Input validation
-- **Swashbuckle (Swagger)**: 6.2.3 - API documentation
-- **SpecFlow**: BDD testing framework (Integration Tests)
+- **AutoMapper**: 16.0.0 - Object mapping
+- **Swashbuckle (Swagger)**: 10.1.0 - API documentation
+
+### Testing Frameworks
+- **NUnit**: 4.4.0 - Unit testing framework
+- **Moq**: 4.20.70 - Mocking library
+- **SpecFlow**: 3.9.74 - BDD testing with Gherkin
+- **FluentAssertions**: 8.8.0 - Assertion library
+- **Coverlet**: 3.2.0 - Code coverage
 
 ## 🚀 Getting Started
 
@@ -60,9 +65,9 @@ DREAMHOMES Server is a RESTful API backend that powers the DREAMHOMES property m
 
 Before you begin, ensure you have the following installed:
 
-- **.NET SDK**: 6.0 or higher - [Download here](https://dotnet.microsoft.com/download/dotnet/6.0)
+- **.NET SDK**: 10.0 or higher - [Download here](https://dotnet.microsoft.com/download)
 - **SQL Server**: 2019 or higher (Express edition works fine)
-- **Visual Studio 2022** or **VS Code** with C# extension
+- **Visual Studio 2022** (17.12+) or **VS Code** with C# extension
 - **SQL Server Management Studio (SSMS)** - Optional but recommended
 
 ### Installation
@@ -188,20 +193,6 @@ dotnet watch run
 dotnet publish -c Release -o ./publish
 ```
 
-### Running Tests
-
-**Unit Tests**:
-```bash
-cd DREAMHOMESTEST
-dotnet test
-```
-
-**Integration Tests** (SpecFlow/Gherkin):
-```bash
-cd "Integration Tests"
-dotnet test
-```
-
 ## 📚 API Documentation
 
 Once the application is running, access the Swagger UI documentation at:
@@ -217,31 +208,69 @@ Swagger provides:
 
 ## 🧪 Testing
 
-### Project Structure
+The solution includes comprehensive test coverage across multiple projects:
 
-The solution includes comprehensive testing:
+### Test Projects
 
-- **DREAMHOMESTEST/**: Unit tests for business logic and services
-- **Integration Tests/**: BDD tests using SpecFlow (Gherkin syntax)
+1. **DREAMHOMESTEST** - Unit Tests
+   - Framework: NUnit 3.13.3
+   - Mocking: Moq 4.20.70
+   - Coverage: Coverlet 3.2.0
+   - Tests business logic, services, and repositories
 
-### Running All Tests
+2. **Integration Tests** - BDD Tests
+   - Framework: SpecFlow 3.9.74 with NUnit
+   - Assertions: FluentAssertions 8.8.0
+   - Tests API endpoints and workflows using Gherkin syntax
+   - Living documentation support
 
+### Running Tests
+
+**Run all tests**:
 ```bash
 dotnet test
 ```
 
-### Test Coverage
+**Run unit tests only**:
+```bash
+dotnet test DREAMHOMESTEST/DREAMHOMESTEST.csproj
+```
 
-The project includes:
-- Unit tests for services and repositories
-- Integration tests for API endpoints
-- BDD scenarios using Gherkin syntax
+**Run integration tests only**:
+```bash
+dotnet test "Integration Tests/IntegrationTests.csproj"
+```
+
+**Run tests with code coverage**:
+```bash
+dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+```
+
+**Run tests with detailed output**:
+```bash
+dotnet test --verbosity normal
+```
+
+### Test Structure
+
+**Unit Tests (DREAMHOMESTEST)**:
+- Service layer tests
+- Repository layer tests
+- Validator tests
+- AutoMapper profile tests
+- Uses Moq for dependency mocking
+
+**Integration Tests**:
+- Feature files written in Gherkin syntax
+- Step definitions for API testing
+- End-to-end workflow validation
+- Database integration testing
 
 ## 📁 Project Structure
 
 ```
 dreamhomesserver/
-├── DREAMHOMES/              # Main API project
+├── DREAMHOMES/              # Main API project (.NET 10.0)
 │   ├── Controllers/         # API endpoints
 │   ├── Models/             # Domain models and entities
 │   │   └── Enums/          # Enumeration types
@@ -252,8 +281,15 @@ dreamhomesserver/
 │   ├── Validators/         # FluentValidation validators
 │   ├── Profiles/           # AutoMapper profiles
 │   └── Program.cs          # Application entry point
-├── DREAMHOMESTEST/         # Unit tests
-├── Integration Tests/      # Integration tests (SpecFlow)
+├── DREAMHOMESTEST/         # Unit tests (NUnit + Moq)
+│   ├── Services/           # Service layer tests
+│   ├── Repositories/       # Repository tests
+│   └── Validators/         # Validation tests
+├── Integration Tests/      # BDD tests (SpecFlow + NUnit)
+│   ├── Features/           # Gherkin feature files
+│   ├── StepDefinitions/    # Step definition classes
+│   ├── Drivers/            # Test infrastructure
+│   └── Support/            # Helper classes
 └── DREAMHOMES.sln          # Solution file
 ```
 
@@ -274,7 +310,7 @@ The application follows a clean architecture pattern:
 - **Dependency Injection**: Built-in ASP.NET Core DI
 - **DTO Pattern**: Data Transfer Objects for API contracts
 - **Mapper Pattern**: AutoMapper for object transformations
-- **Validator Pattern**: FluentValidation for input validation
+- **Validator Pattern**: Custom validation for input validation
 
 ### Authentication Flow
 
@@ -313,8 +349,21 @@ The application follows a clean architecture pattern:
 **Migration errors**:
 - Delete existing migrations and recreate
 - Check for model configuration conflicts
-- Ensure database provider (SQL Server) is correct\
-  
+- Ensure database provider (SQL Server) is correct
+
+**Test failures**:
+- Ensure test database is accessible
+- Check that all NuGet packages are restored
+- Verify mock configurations in unit tests
+
+## 📊 Version Information
+
+- **.NET Version**: 10.0
+- **Entity Framework Core**: 10.0.2
+- **C# Language Version**: 12.0
+- **Test Framework**: NUnit 4.4.0 / NUnit 3.13.3
+- **BDD Framework**: SpecFlow 3.9.74
+
 ## 👨‍💻 Author
 
 **Madhurirao95**
@@ -323,4 +372,4 @@ The application follows a clean architecture pattern:
 
 ---
 
-Built with ❤️ using ASP.NET Core 6.0
+Built with ❤️ using ASP.NET Core 10.0
