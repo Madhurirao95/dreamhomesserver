@@ -15,7 +15,7 @@ namespace DREAMHOMES.Models.Repository
             _context = context;
         }
 
-        public async void Add(Conversation conversation)
+        public async Task Add(Conversation conversation)
         {
             _context.Conversations.Add(conversation);
             await _context.SaveChangesAsync();
@@ -50,13 +50,13 @@ namespace DREAMHOMES.Models.Repository
                 .ToListAsync();
         }
 
-        public void Update(Conversation conversation)
+        public async Task Update(Conversation conversation)
         {
             _context.Conversations.Update(conversation);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(Conversation entity)
+        public Task Delete(Conversation entity)
         {
             throw new NotImplementedException();
         }

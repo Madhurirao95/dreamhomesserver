@@ -31,7 +31,7 @@ namespace DREAMHOMES.Services
                 return results;
             }
 
-            _sellRepository.Add(sellerInformation);
+            await _sellRepository.Add(sellerInformation);
 
             return results;
         }
@@ -51,7 +51,7 @@ namespace DREAMHOMES.Services
                 return results;
             }
 
-            _sellRepository.Update(updatedEntity);
+            await _sellRepository.Update(updatedEntity);
 
             return results;
         }

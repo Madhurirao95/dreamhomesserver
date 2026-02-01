@@ -13,13 +13,13 @@ namespace DREAMHOMES.Models.Repository
             _context = context;
         }
 
-        public async void Add(ChatMessage message)
+        public async Task Add(ChatMessage message)
         {
             _context.ChatMessages.Add(message);
             await _context.SaveChangesAsync();
         }
 
-        public void Delete(ChatMessage entity)
+        public Task Delete(ChatMessage entity)
         {
             throw new NotImplementedException();
         }
@@ -42,7 +42,7 @@ namespace DREAMHOMES.Models.Repository
             return chatMessage;
         }
 
-        public void Update(ChatMessage entityToUpdate)
+        public Task Update(ChatMessage entityToUpdate)
         {
             throw new NotImplementedException();
         }

@@ -14,7 +14,7 @@ namespace DREAMHOMES.Models.Repository
             _context = context;
         }
 
-        public void Add(SellerInformation entity)
+        public async Task Add(SellerInformation entity)
         {
             // Extract to common method.
             var geometryFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
@@ -23,10 +23,10 @@ namespace DREAMHOMES.Models.Repository
             entity.Location = currentLocation;
 
             _context.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(SellerInformation entity)
+        public Task Delete(SellerInformation entity)
         {
             throw new NotImplementedException();
         }
@@ -44,14 +44,14 @@ namespace DREAMHOMES.Models.Repository
             throw new NotImplementedException();
         }
 
-        public void Update(SellerInformation entityToUpdate)
+        public async Task Update(SellerInformation entityToUpdate)
         {
             var geometryFactory = NetTopologySuite.NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
             var currentLocation = geometryFactory.CreatePoint(new Coordinate(entityToUpdate.Location.X, entityToUpdate.Location.Y));
 
             entityToUpdate.Location = currentLocation;
             _context.SellerInformation.Update(entityToUpdate);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<SellerInformation>> GetAllByAddress(string streetAddress, string city, string zipCode, string country, SellerInformation.States state)

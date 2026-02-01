@@ -43,6 +43,7 @@ builder.Services.AddScoped<IValidationService, ValidationService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 
 builder.Services.AddScoped<ISellRepository, SellRepository>();
 builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();

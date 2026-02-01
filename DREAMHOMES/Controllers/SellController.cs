@@ -19,14 +19,17 @@ namespace DREAMHOMES.Controllers
         private readonly IValidator<SellerInformation> _validator;
         private readonly IMapper _mapper;
         private readonly ISellService _service;
+        private readonly IDocumentService _documentService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public SellController(ILogger<SellController> logger, IMapper mapper, ISellService sellService, IValidator<SellerInformation> validator, UserManager<ApplicationUser> userManager) { 
+        public SellController(ILogger<SellController> logger, IMapper mapper, ISellService sellService, IDocumentService documentService
+            , IValidator<SellerInformation> validator, UserManager<ApplicationUser> userManager) { 
             _logger = logger;
             _mapper = mapper;
             _validator = validator;
             _service = sellService;
             _userManager = userManager;
+            _documentService = documentService;
         }
 
         /// <summary>
@@ -63,7 +66,7 @@ namespace DREAMHOMES.Controllers
                 }
             }
             // get and assign documents.
-            AssignDocuments(sellerInformationPostPutDTO, sellerInformation, email);
+            await this._documentService.AssignDocuments(sellerInformationPostPutDTO.Documents, email, sellerInformation);
 
             var errorResult = await _service.PostListing(sellerInformation);
 
@@ -109,8 +112,7 @@ namespace DREAMHOMES.Controllers
             }
 
             // get and assign new documents.
-            existingSellerInformation.Documents.Clear();
-            AssignDocuments(sellerInformationPostPutDTO, existingSellerInformation, existingSellerInformation.User.Email);
+            await this._documentService.AssignDocuments(sellerInformationPostPutDTO.Documents, existingSellerInformation.User.Email, existingSellerInformation);
 
             var errorResult = await _service.UpdateListing(existingSellerInformation, sellerInformation);
 
@@ -197,47 +199,6 @@ namespace DREAMHOMES.Controllers
             resultDto.DocumentList = documentDtoList;
 
             return Ok(resultDto);
-        }
-
-        private async void AssignDocuments(SellerInformationPostPutDTO sellerInformationPostPutDTO, SellerInformation sellerInformation, string email)
-        {
-            sellerInformation.Documents = new List<Document>();
-            foreach (var file in sellerInformationPostPutDTO.Documents)
-            {
-                var basePath = Path.Combine("Documents");
-                bool basePathExists = Directory.Exists(basePath);
-
-                if (!basePathExists)
-                {
-                    Directory.CreateDirectory(basePath);
-                }
-
-                var fileName = Path.GetFileNameWithoutExtension(file.FileName);
-                var filePath = Path.Combine(basePath, file.FileName);
-                var extension = Path.GetExtension(file.FileName);
-
-                if (!System.IO.File.Exists(filePath))
-                {
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await file.CopyToAsync(stream);
-                    }
-                }
-
-
-                var document = new Document
-                {
-                    DateCreated = DateTime.Now,
-                    DateModified = DateTime.Now,
-                    Name = file.FileName,
-                    FilePath = filePath,
-                    FileType = file.ContentType,
-                    Extension = extension,
-                    Size = file.Length,
-                    AuthorName = email
-                };
-                sellerInformation.Documents.Add(document);
-            }
         }
     }
 }
