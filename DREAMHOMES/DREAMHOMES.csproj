@@ -19,6 +19,8 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2">

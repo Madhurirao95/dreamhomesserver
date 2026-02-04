@@ -1,7 +1,4 @@
-using AutoMapper;
 using DREAMHOMES.Configuration;
-using DREAMHOMES.Controllers.Mappers;
-using DREAMHOMES.Controllers.Mapping_Profiles;
 using DREAMHOMES.Extensions;
 using DREAMHOMES.Hubs;
 using DREAMHOMES.Models;
@@ -11,9 +8,7 @@ using DREAMHOMES.Models.Repository.Interfaces;
 using DREAMHOMES.Models.Rules;
 using DREAMHOMES.Services;
 using DREAMHOMES.Services.Interfaces;
-using DREAMHOMES.Services.MappingProfile;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -34,10 +29,20 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddMaps(typeof(Program).Assembly);
 });
 
-builder.Services.AddDbContext<DreamhomesContext>(
-        options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection", x => x.UseNetTopologySuite()));
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-
+if (builder.Environment.IsDevelopment())
+{
+    // Local development: SQL Server
+    builder.Services.AddDbContext<DreamhomesContext>(options =>
+        options.UseSqlServer(connectionString, x => x.UseNetTopologySuite()));
+}
+else
+{
+    // Deployed (production/staging): SQLite
+    builder.Services.AddDbContext<DreamhomesContext>(options =>
+        options.UseSqlite(connectionString, x => x.UseNetTopologySuite()));
+}
 builder.Services.AddScoped<ISellService, SellService>();
 builder.Services.AddScoped<IValidationService, ValidationService>();
 builder.Services.AddScoped<IChatService, ChatService>();
@@ -54,7 +59,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp",
         policy => policy
-            .WithOrigins("http://localhost:4200")
+            .WithOrigins("https://dreamhomes-7hqb.vercel.app/", "http://localhost:4200")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()); // Required for SignalR
@@ -152,7 +157,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
-app.UseCors("AllowAngularApp");
+app.UseCors("AllowVercel");
 app.UseAuthentication();
 app.UseAuthorization();
 

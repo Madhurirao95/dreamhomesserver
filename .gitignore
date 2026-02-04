@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /DREAMHOMES/Documents
 /DREAMHOMES/appsettings.json
+/DREAMHOMES/appsettings.Development.json
+/DREAMHOMES/appsettings.Development.json
