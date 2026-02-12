@@ -57,7 +57,7 @@ builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 // Add CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngularApp",
+    options.AddPolicy("AllowVercel",
         policy => policy
             .WithOrigins("https://dreamhomes-7hqb.vercel.app/", "http://localhost:4200")
             .AllowAnyMethod()
