@@ -20,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.ConfigureCors();
+// builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 
 builder.Services.AddControllers();
@@ -59,7 +59,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowVercel",
         policy => policy
-            .WithOrigins("https://dreamhomes-7hqb.vercel.app/", "http://localhost:4200")
+            .WithOrigins("https://dreamhomes-7hqb.vercel.app", "http://localhost:4200")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()); // Required for SignalR
@@ -124,6 +124,28 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 var app = builder.Build();
 
+if (!app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        var dbContext = services.GetRequiredService<DreamhomesContext>();
+        logger.LogInformation("Initializing SQLite database in Azure...");
+
+        // Create database from model (no migrations needed)
+        dbContext.Database.EnsureCreated();
+
+        logger.LogInformation("SQLite database created successfully.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Database creation failed: {Message}", ex.Message);
+    }
+}
+
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -149,6 +171,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseHttpsRedirection();
 

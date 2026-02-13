@@ -5,17 +5,40 @@ namespace DREAMHOMES.Services
 {
     public class DocumentService : IDocumentService
     {
+        private readonly IWebHostEnvironment _environment;
+        private readonly ILogger<DocumentService> _logger;
+
+        public DocumentService(
+            IWebHostEnvironment environment,
+            ILogger<DocumentService> logger)
+        {
+            _environment = environment;
+            _logger = logger;
+        }
+
         public async Task AssignDocuments(IList<IFormFile> files, string email, SellerInformation sellerInformation)
         {
             sellerInformation.Documents = [];
             foreach (var file in files)
             {
-                var basePath = Path.Combine("Documents");
-                bool basePathExists = Directory.Exists(basePath);
+                string basePath;
 
-                if (!basePathExists)
+                if (_environment.IsDevelopment())
+                {
+                    // Development: Save in project Documents folder
+                    basePath = Path.Combine(Directory.GetCurrentDirectory(), "Documents");
+                }
+                else
+                {
+                    // Production (Azure): Save in persistent storage
+                    basePath = Path.Combine("/home/site/wwwroot", "Documents");
+                }
+
+                // Create directory if it doesn't exist
+                if (!Directory.Exists(basePath))
                 {
                     Directory.CreateDirectory(basePath);
+                    _logger.LogInformation($"Created directory: {basePath}");
                 }
 
                 var fileName = Path.GetFileNameWithoutExtension(file.FileName);

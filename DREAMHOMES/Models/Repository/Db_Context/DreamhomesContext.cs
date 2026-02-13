@@ -103,6 +103,25 @@ public partial class DreamhomesContext : IdentityDbContext<ApplicationUser>
             .WithMany(d => d.Messages)
             .HasForeignKey(c => c.ConversationId)
             .IsRequired();
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(NetTopologySuite.Geometries.Point) ||
+                    property.ClrType == typeof(NetTopologySuite.Geometries.Geometry))
+                {
+                    if (Database.IsSqlServer())
+                    {
+                        property.SetColumnType("geography");
+                    }
+                    else if (Database.IsSqlite())
+                    {
+                        property.SetColumnType("GEOMETRY");
+                    }
+                }
+            }
+        }
     }
 
     public DbSet<SellerInformation> SellerInformation { get; set; }
