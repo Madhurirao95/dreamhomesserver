@@ -20,6 +20,7 @@ public partial class DreamhomesContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<SellerInformation>()
             .Property(e => e.Location)
+            .HasSrid(4326)
             .IsRequired();
 
         modelBuilder.Entity<SellerInformation>()
