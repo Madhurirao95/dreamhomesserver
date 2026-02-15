@@ -332,6 +332,62 @@ The application follows a clean architecture pattern:
 
 - **Frontend Repository**: [dreamhomes](https://github.com/Madhurirao95/dreamhomes) - Angular 17 client application
 
+## 🌐 Live Demo & Deployment
+
+The API is deployed on Azure and serves the DREAMHOMES frontend application.
+
+- **Live Application**: [https://dreamhomes-7hqb.vercel.app/](https://dreamhomes-7hqb.vercel.app/)
+- **Frontend**: Vercel
+- **Backend API**: Azure
+
+### Real-Time Chat Feature
+
+The backend includes SignalR hub implementation for real-time communication between buyers and agents.
+
+#### Testing Real-Time Chat
+
+To test the chat functionality with multiple users:
+
+**Setup:**
+1. Open the application in two separate browsers (or one normal + one incognito window)
+2. **Browser A**: Login as buyer
+   - Email: `test@gmail.com`
+   - Password: `Test@123`
+3. **Browser B**: Login as agent
+   - Email: `agent@gmail.com`
+   - Password: `Test@123`
+
+**Testing Flow:**
+
+**Buyer Side (Browser A):**
+1. Navigate to any property listing
+2. Click on the property address to view details
+3. Scroll to the bottom of the page
+4. Click **"Chat with a Local Expert!"** button (bottom-right corner)
+5. Chat dialog opens
+
+**Agent Side (Browser B):**
+1. Incoming chat request appears from `test@gmail.com`
+2. Click **"Accept"** to establish connection
+
+**Real-Time Features:**
+- ✅ Instant message delivery via SignalR
+- ✅ No polling or page refresh required
+- ✅ WebSocket connection for low-latency communication
+- ✅ Connection state management
+- ✅ Message persistence
+
+#### SignalR Configuration
+
+The backend handles:
+- WebSocket connections
+- Message routing between users
+- Connection lifecycle management
+- User presence tracking
+- Chat session management
+
+See the SignalR hub implementation in the codebase for technical details.
+
 ## 🔧 Troubleshooting
 
 ### Common Issues
@@ -355,6 +411,12 @@ The application follows a clean architecture pattern:
 - Ensure test database is accessible
 - Check that all NuGet packages are restored
 - Verify mock configurations in unit tests
+
+**SignalR connection issues**:
+- Verify WebSocket support is enabled
+- Check CORS configuration for SignalR endpoints
+- Ensure firewall allows WebSocket connections
+- Check Azure configuration for WebSocket support
 
 ## 📊 Version Information
 
