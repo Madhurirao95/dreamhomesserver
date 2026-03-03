@@ -49,6 +49,7 @@ builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<IAIService, AIService>();
 
 builder.Services.AddScoped<ISellRepository, SellRepository>();
 builder.Services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
@@ -121,6 +122,8 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
 });
+
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

@@ -1,16 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using DREAMHOMES.Configuration;
 using DREAMHOMES.Controllers.DTOs.Account;
-using System.IdentityModel.Tokens.Jwt;
-
-using System.Security.Claims;
-
-using System.Text;
-using DREAMHOMES.Models;
-using Microsoft.AspNetCore.Authorization;
 using DREAMHOMES.Services.Interfaces;
 
 namespace DREAMHOMES.Controllers

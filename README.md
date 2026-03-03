@@ -16,6 +16,7 @@ Backend API for the DREAMHOMES application, built with ASP.NET Core 10.0 and Ent
 - [Project Structure](#project-structure)
 - [Architecture](#architecture)
 - [Contributing](#contributing)
+- [Live Demo & Deployment](#live-demo--deployment)
 
 ## 🏠 About
 
@@ -31,6 +32,7 @@ DREAMHOMES Server is a RESTful API backend that powers the DREAMHOMES property m
 - 🔄 **AutoMapper** - Object-to-object mapping
 - 📝 **API Documentation** - Swagger/OpenAPI documentation
 - 🧪 **Comprehensive Testing** - Unit tests with NUnit/Moq and BDD integration tests with SpecFlow
+- 🤖 **AI Integration** - Google Gemini AI for automated property description generation
 
 ## 🛠️ Tech Stack
 
@@ -338,7 +340,9 @@ The API is deployed on Azure and serves the DREAMHOMES frontend application.
 
 - **Live Application**: [https://dreamhomes-7hqb.vercel.app/](https://dreamhomes-7hqb.vercel.app/)
 - **Frontend**: Vercel
-- **Backend API**: Azure
+- **Backend API**: Azure App Service (Free Tier)
+
+> **Important**: This API is hosted on Azure's free tier, which has daily usage quotas and resource limitations. If the API is unresponsive or the live demo is not working, the daily quota may have been exceeded. For local setup instructions, please refer to the [Getting Started](#getting-started) section, or contact [madhurirao95@gmail.com](mailto:madhurirao95@gmail.com) to schedule a personal demonstration.
 
 ### Real-Time Chat Feature
 
@@ -388,6 +392,90 @@ The backend handles:
 
 See the SignalR hub implementation in the codebase for technical details.
 
+### Testing AI-Powered Description Generation
+
+The backend provides an AI integration endpoint powered by **Google Gemini 2.5 Flash** for generating professional property descriptions automatically.
+
+**To test this feature:**
+
+1. **Login to the application**:
+   - Email: `test@gmail.com`
+   - Password: `Test@123`
+
+2. **Navigate**: Go to **Sell** page → Click **"Post A Listing"**
+
+3. **Fill Form**: Enter all required property details (address, price, bedrooms, bathrooms, square footage, etc.)
+
+4. **Generate Description**:
+   - Scroll to the **"Description"** field at the bottom of the form
+   - Click the **"Generate with AI"** button
+   - The backend processes the property data through Google Gemini API and returns a professional description
+
+**AI Service Implementation Details:**
+
+The `AIService` uses Google Gemini 2.5 Flash model with advanced resilience patterns:
+
+```csharp
+// Model Configuration
+Model: gemini-2.5-flash
+API: Google Generative Language API
+Max Description Length: 2000 characters
+```
+
+**Key Features:**
+
+1. **Intelligent Prompt Engineering**
+   - Includes essential property details: address, type, bedrooms, bathrooms, square footage, lot area
+   - Features: garage spaces, pool, fireplace, HOA fees, year built
+   - Optimized to reduce token usage while maintaining quality
+   - Truncates additional properties to 10,000 characters to prevent token overflow
+
+2. **Resilience Patterns**
+   - ✅ **Exponential Backoff Retry Logic**: 3 attempts with delays of 1s, 2s, 4s
+   - ✅ **Automatic Retry on Failures**: Retries on 5xx server errors, 429 rate limiting, timeouts
+   - ✅ **Network Error Handling**: Retries on timeout and connection failures
+   - ✅ **Token Optimization**: Excludes unnecessary fields to reduce API costs
+
+3. **Error Handling**
+   - Comprehensive logging of retry attempts
+   - Graceful degradation on API failures
+   - Clear error messages for debugging
+
+**Backend API Response:**
+- ✅ Professional, marketing-ready descriptions
+- ✅ Contextual analysis of property attributes
+- ✅ Fast response time with retry resilience
+- ✅ Consistent tone and formatting
+- ✅ Highlights best features automatically
+- ✅ Ends with call-to-action: "Book your viewing today!"
+
+**Sample Prompt Structure:**
+```
+Location: [Street], [City], [State]
+PropertyType: [Type] | BuildingType: [BuildingType]
+Beds: [Count] | Baths: [Count] | Size: [SqFt] sqft
+LotArea: [Area] [Unit]
+Built: [Year]
+
+Features:
+- Garage: [Spaces] spaces
+- Pool: Yes/No
+- Fireplace: [Count] fireplace(s)
+- HOA: $[Amount]
+- Other features: [Additional Properties]
+```
+
+**Configuration Required:**
+
+Add your Google Gemini API key to `appsettings.json`:
+```json
+"Gemini": {
+  "ApiKey": "YOUR_GEMINI_API_KEY"
+}
+```
+
+This demonstrates the backend's AI integration capabilities for enhancing property listings with minimal manual effort.
+
 ## 🔧 Troubleshooting
 
 ### Common Issues
@@ -417,6 +505,13 @@ See the SignalR hub implementation in the codebase for technical details.
 - Check CORS configuration for SignalR endpoints
 - Ensure firewall allows WebSocket connections
 - Check Azure configuration for WebSocket support
+
+**Gemini AI API issues**:
+- Verify API key is correctly set in appsettings.json
+- Check API quota limits on Google Cloud Console
+- Review logs for retry attempts and specific error messages
+- Ensure network allows HTTPS requests to generativelanguage.googleapis.com
+- Verify HttpClientFactory is properly configured
 
 ## 📊 Version Information
 
